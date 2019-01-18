@@ -1,5 +1,17 @@
 # Evil Hangman
 
+To compile the game, type "make". To run the game, type "./hangman".
+
+Computing II Final Project. 
+
+## The assignment
+
+In case you aren't familiar with the game of Hangman, the rules are as follows: 
+
+1. One player chooses a secret word, and then writes out a number of dashes equal to the word length. 
+2. The other player begins guessing letters. Whenever she guesses a letter contained in the hidden word, the first player reveals every instance of that letter in the word. Otherwise, the guess is wrong. 
+3. The game ends either when all the letters in the word have been revealed or when the guesser has run out of guesses.
+
 Fundamental to the game is the fact the first player accurately represents the word she has chosen. That way, when the other players guess letters, she can reveal whether that letter is in the word. But what happens if the player doesn't do this? This gives the player who chooses the hidden word an enormous advantage. For example, suppose that you're the player trying to guess the word, and at some point you end up revealing letters until you arrive at this point with only one guess remaining: 
 
 D O – B L E 
@@ -32,16 +44,38 @@ ALLY COOL GOOD
 
 and since you didn't reveal any letters, you would tell your opponent that his guess was wrong. 
 
-Let's see a few more examples of this strategy. Given this three-word word list, if your opponent guesses the letter O, then you would break your word list down into two families: 
+## Prerequisites
 
-- -OO- , containing COOL and GOOD. 
+- A string-handling module. (MyString)
 
-- ---- , containing ALLY. 
+- A generic vector module that holds MyString objects.
 
-The first of these families is larger than the second, and so you choose it, revealing two O's in the word and reducing your list down to 
+- An array of generic vectors of MyStrings containing the entire dictionary read from the “dictionary.txt” file. The dictionary file contains an unabridged dictionary with over 120,000 words. The array should hold 30 Vectors of words separated by word lengths 1 to 29, each of which holds MyString objects which each hold a word.
 
-COOL GOOD 
+- An AssociativeArray module which allows using MyString data as the “key” or “index” to locate a particular Vector of Mystrings. The AssociativeArray must be implemented using an AVL Tree. There will be no duplicate keys. When a new MyString data item is added to the AssociativeArray, a “key” value (MyString object) will be given. That “key” is located in the AVL tree (or added to the AVL tree), and the data MyString is added to the Vector associated with that “key”. Look-up by “key” yields a Vector of all of the MyString that have been added to the Vector associated with that key.
 
-But what happens if your opponent guesses a letter that doesn't appear anywhere in your words list? For example, what happens if your opponent now guesses 'T'? This isn't a problem. If you try splitting these words apart into word families, you'll find that there's only one family – the family - OO - in which T appears nowhere and which contains both COOL and GOOD. Since there is only one word family here, it's trivially the largest family, and by picking it you'd maintain the word list you already had. 
+## Requirements
 
-There are two possible outcomes of this game. First, your opponent might be smart enough to pare the word list down to one word and then guess what that word is. In this case, you should congratulate him – that's an impressive feat considering the scheming you were up to! Second, and by far the most common case, your opponent will be completely stumped and will run out of guesses. When this happens, you can pick any word you'd like from your list and say it's the word that you had chosen all along. The beauty of this setup is that your opponent will have no way of knowing that you were dodging guesses the whole time – it looks like you simply picked an unusual word and stuck with it the whole way.
+1. Prompt the user for a word length, re-prompting as necessary until she enters a number such that there's at least one word that's exactly that long. That is, if the user wants to play with words of length -42 or 137, since no English words are that long, you should reprompt her.
+
+2. Prompt the user for a number of guesses, which must be an integer greater than zero. Don't worry about unusually large numbers of guesses – after all, having more than 26 guesses isclearly not going to help your opponent!
+
+3. Prompt the user for whether she wants to have a running total of the number of words remaining in the word list. This completely ruins the illusion of a fair game that you'll be cultivating, but it's quite useful for testing (and grading!)
+
+4. Play a game of Hangman using the Evil Hangman algorithm, as described below:
+
+    a. Select the Vector of all words in the English language whose length matches the input length.
+
+    b. Print out how many guesses the user has remaining, along with any letters the player has guessed and the current blanked-out version of the word. If the user chose earlier to see the number of words remaining, print that out too.
+
+    c. Prompt the user for a single letter guess, re-prompting until the user enters a letter that she hasn't guessed yet. Make sure that the input is exactly one character long and that it's a letter of the alphabet.
+
+    d. Partition the words in the dictionary into groups by word family. The word family is the “key” in the AssociativeArray, and the words (already contained in MyStrings from having been read into the Vector of Vectors of MyStrings initially), are added to the Vector in the AssociativeArray which is associated with the given “key” word family.
+
+    e. Find the most common “word family” in the remaining words, remove all words from the word list that aren't in that family, and report the position of the letters (if any) to the user. If the word family doesn't contain any copies of the letter, subtract a remaining guess from the user.
+
+    f. If the player has run out of guesses, pick a word from the word list and display it as the word that the computer initially “chose.”
+
+    g. If the player correctly guesses the word, congratulate her.
+
+5. Ask if the user wants to play again and loop accordingly.
